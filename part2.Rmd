@@ -1,0 +1,82 @@
+---
+title: "Deliverable Part 1"
+output: html_document
+---
+My second source is a website of crime statistics that compares LA crimes to the California and National averages.It has 9 different variables for types of crimes and each crime has 4 sections to put the number to scale.
+
+#SYNOPSIS
+
+##In my LA_crime table I will use the variables
+-----------------------------------------------
+Crime_type, Reported which is number of crimes reported, LA_Annual which is the annual amount of crime per 100k people
+
+##In my Comparison table I will use the variables
+-------------------------------------------------
+Crime_type, CA_Annual which is the annual average per 100k people, and National_Annual which is the Annual average per 100k people.
+
+#Data Initialization
+
+Here is where I load in my libraries and data, I'm using a website so I have to web scrape the data.
+
+```{r}
+install.packages("tidyverse")
+library("ggplot2")
+library("tidyverse")
+library("readr")
+library("dplyr")
+library("tidyr")
+library("rvest")
+library("caret")
+library("caret")
+
+#This is where I pull my first deliverable as my source
+purl("Part1.Rmd", output = "part1.r")
+source("part1.r")
+
+
+my_url<-"https://www.areavibes.com/los+angeles-ca/crime/"
+crime_html<-read_html(my_url)
+#Statistics<- crime_html %>% html_nodes("tr:not(.header) > td:nth-child(1)") %>% html_text
+
+Crime_type<- crime_html %>% 
+            html_nodes("table.is-city tr:not(.header):not(.summary) > td:nth-child(1)") %>% 
+  html_text()
+
+Reported<- crime_html %>% 
+            html_nodes("table.is-city tr:not(.header):not(.summary) > td:nth-child(2)") %>% 
+  html_text()
+Reported<-as.numeric(gsub(",","",Reported,fixed=TRUE))
+
+LA_Annual<-crime_html %>% 
+            html_nodes("table.is-city tr:not(.header):not(.summary) > td:nth-child(4)") %>% 
+  html_text()
+LA_Annual<-as.numeric(gsub(",","",LA_Annual,fixed=TRUE))
+
+CA_Annual<-crime_html %>% 
+            html_nodes("table.is-city tr:not(.header):not(.summary) > td:nth-child(5)") %>% 
+  html_text()
+CA_Annual<-as.numeric(gsub(",","",CA_Annual,fixed=TRUE))
+
+National_Annual<- crime_html %>% 
+            html_nodes("table.is-city tr:not(.header):not(.summary) > td:nth-child(6)") %>% 
+  html_text()
+National_Annual<-as.numeric(gsub(",","",National_Annual,fixed=TRUE))
+
+
+LA_Crime<-tibble(Crime_type = Crime_type, Reported = Reported)
+
+Comparison<-tibble(Crime_type = Crime_type, LA_Annual = LA_Annual, CA_Annual = CA_Annual, National_Annual = National_Annual)
+
+Comparison<-gather(Comparison, "Locale", "Count",2:4)
+
+ggplot(data = LA_Crime, aes(x = Crime_type, y = Reported)) + geom_bar(colour = "blue", stat = "identity",fill = "steelblue")+geom_text(aes(label=Reported), position=position_dodge(width=0.9), vjust=-0.25)
+
+```
+This Graph can easily show us the stats for reported crimes in 1 year in LA.
+
+
+##In this next chunk of code I will compare LA's annual crime (per 100k citizens) to the rest of California, and the rest of America.
+```{r}
+ggplot(data = Comparison, aes(fill = Locale, x = Crime_type, y = Count)) + geom_bar(position = "dodge",stat = "identity") + geom_text(aes(label=Count), position=position_dodge(width=1.0), vjust=.1)
+
+```

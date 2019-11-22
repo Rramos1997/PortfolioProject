@@ -1,0 +1,72 @@
+---
+title: "Deliverable Part 1"
+output: html_document
+---
+
+
+In my data set there is 26 variables and nearly 2 million obersvations. Some of the categorical variables that are going to be the most useful will be Crime.Code.Description, Crime.Code, and Area Name.
+
+
+# SYNOPSIS
+
+## In my Victim table, I have the variables;
+-----------------------------------------
+Report number, Age, Descent which describes what their ethnicity is, and sex
+
+
+## In my CrimeDetails table I Have the Variables;
+----------------------------------------------
+Report_Number, Date_reported, 
+Date_Occurred, Time_Occured, 
+Area_Name, Crime_Code, 
+Crime_Description, Premise_Code, 
+Premise_Description which describe the premices where the crime took place, 
+Weapon_Code, Weapon_Description, 
+Status_Code, Status_Description which describes the status of the case, 
+Crime_Code2-4 for if more than one crime was committed,
+Address for where crime was committed, and Cross_Street for the cross street of the crime.
+
+# Data Initialization
+
+This is where I install the tidyverse and load in appropriate libraries for data wrangling
+
+```{r}
+## Load in data and libraries
+
+install.packages("tidyverse")
+crime <- read.csv("~/CSCI385/Portfolio Project/crime-data-from-2010-to-present.csv", header=TRUE)
+library("ggplot2")
+library("tidyverse")
+library("readr")
+library("dplyr")
+library("tidyr")
+
+## Clean up data, make victim, and crime tables, fix 0 or blanks with NA
+
+Victim<-tibble(Report_Number = crime$DR.Number, Age = crime$Victim.Age, Descent = crime$Victim.Descent, Sex = crime$Victim.Sex)
+
+CrimeDetails<-tibble(Report_Number = crime$DR.Number, Date_Reported = crime$Date.Reported, Date_Occurred = crime$Date.Occurred, Time_Occurred = crime$Time.Occurred, Area_Name = crime$Area.Name, Crime_Code = crime$Crime.Code, Crime_Description = crime$Crime.Code.Description, Premise_Code = crime$Premise.Code, Premise_Description = crime$Premise.Description, Weapon_Code = crime$Weapon.Used.Code, Weapon_Description = crime$Weapon.Description, Status_Code = crime$Status.Code, Status_Description = crime$Status.Description, Crime_Code2 = crime$Crime.Code.2, Crime_Code3 = crime$Crime.Code.3, Crime_Code4 = crime$Crime.Code.4, Address = crime$Address, Cross_Street = crime$Cross.Street)
+
+Victim$Age[Victim$Age == "0"]<- NA
+Victim$Sex[Victim$Sex == " "]<- NA
+Victim$Descent[Victim$Descent == " "]<- NA
+CrimeDetails$Weapon_Description[CrimeDetails$Weapon_Description == " "]<- NA
+```
+I tried to fix my dates so they's all be the same but I couldn't figure out how to get the function working
+```{R}
+#Fixing the date and times for my code
+
+CrimeDetails$Date_Reported<-as.POSIXlt(parse_datetime(as.character(CrimeDetails$Date_Reported), format = "%y-%m-%d"))
+typeof(CrimeDetails$Date_Reported)
+
+SELECT CAST(from_iso8601_timestamp(CrimeDetails$Date_Occured) as date())
+CrimeDetails$Date_Occurred<-as.POSIXlt(parse_datetime(as.character(CrimeDetails$Date_Occured) , format = "%y-%m-%d"))
+
+#CrimeDetails$Time_Occurred<-as.POSIXlt(parse_datetime(CrimeDetails$Time_Occurred,format = "%H:%M %p"))
+```
+#I couldn't get the GGPLOT function working for my CrimeDetails table
+```{R}
+#Plotting number of crimes vs Area
+
+ggplot(CrimeDetails, aes(x = as.factor(Crime_Description), y =Area_Name)) + geom_bar()
+```
