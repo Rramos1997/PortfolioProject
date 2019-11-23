@@ -31,15 +31,14 @@ Address for where crime was committed, and Cross_Street for the cross street of 
 This is where I install the tidyverse and load in appropriate libraries for data wrangling
 
 ```{r}
-## Load in data and libraries
-
-install.packages("tidyverse")
-crime <- read.csv("~/CSCI385/Portfolio Project/crime-data-from-2010-to-present.csv", header=TRUE)
+#install.packages("tidyverse")
+crime <- read.csv("~/CSCI385/PortfolioProject/crime-data-from-2010-to-present.csv", header=TRUE)
 library("ggplot2")
 library("tidyverse")
 library("readr")
 library("dplyr")
 library("tidyr")
+library("plyr")
 
 ## Clean up data, make victim, and crime tables, fix 0 or blanks with NA
 
@@ -56,17 +55,81 @@ I tried to fix my dates so they's all be the same but I couldn't figure out how 
 ```{R}
 #Fixing the date and times for my code
 
-CrimeDetails$Date_Reported<-as.POSIXlt(parse_datetime(as.character(CrimeDetails$Date_Reported), format = "%y-%m-%d"))
-typeof(CrimeDetails$Date_Reported)
+#CrimeDetails$Date_Reported<-as.POSIXlt(parse_datetime(as.character(CrimeDetails$Date_Reported), format = "%y-%m-%d"))
+#typeof(CrimeDetails$Date_Reported)
 
-SELECT CAST(from_iso8601_timestamp(CrimeDetails$Date_Occured) as date())
-CrimeDetails$Date_Occurred<-as.POSIXlt(parse_datetime(as.character(CrimeDetails$Date_Occured) , format = "%y-%m-%d"))
+#SELECT CAST(from_iso8601_timestamp(CrimeDetails$Date_Occured) as date())
+#CrimeDetails$Date_Occurred<-as.POSIXlt(parse_datetime(as.character(CrimeDetails$Date_Occured) , format = "%y-%m-%d"))
 
 #CrimeDetails$Time_Occurred<-as.POSIXlt(parse_datetime(CrimeDetails$Time_Occurred,format = "%H:%M %p"))
 ```
-#I couldn't get the GGPLOT function working for my CrimeDetails table
+##The 3 most common crimes and areas were 
+```{r}
+mostCommon<-names(sort(summary(as.factor(CrimeDetails$Crime_Description)), decreasing=T)[1:3])
+mostCommon
+
+mostCommonArea<-names(sort(summary(as.factor(CrimeDetails$Area_Name)), decreasing=T)[1:3])
+mostCommonArea
+```
+##Manipulating data
+
+In this section I use the count function to get the total numbers of Stolen Vehicles, Battery, and burglary from vehicle. After that I created a function called getTheCountOf which takes 2 variables, crimeName and areaName and returns the number of reported incidents of crime in that area. After that I put them in a dataframe and gather them so I could properly graph them.
+
+```{r}
+countOfStolenVehicle<-count(CrimeDetails$Crime_Description[CrimeDetails$Crime_Description == "VEHICLE - STOLEN"])
+countOfBattery<-count(CrimeDetails$Crime_Description[CrimeDetails$Crime_Description == "BATTERY - SIMPLE ASSAULT"])
+countOfBurglary<-count(CrimeDetails$Crime_Description[CrimeDetails$Crime_Description == "BURGLARY FROM VEHICLE"])
+
+getTheCount<-function(crimeName,areaName){
+  CrimeCount<-count(CrimeDetails$Crime_Description[CrimeDetails$Crime_Description == crimeName & CrimeDetails$Area_Name == areaName])
+  return(CrimeCount)
+}
+
+#Here is where i get the counts for the 3 top crimes on 77th Street
+SeventhVehicle<-getTheCount("VEHICLE - STOLEN","77th Street")
+SeventhBattery<-getTheCount("BATTERY - SIMPLE ASSAULT", "77th Street")
+SeventhBurglary<-getTheCount("BURGLARY FROM VEHICLE","77th Street")
+
+#Here is where I get the count of the top 3 crimes in the Southwest
+SouthwestVehicle<-getTheCount("VEHICLE - STOLEN","Southwest")
+SouthwestBattery<-getTheCount("BATTERY - SIMPLE ASSAULT","Southwest")
+SouthwestBurglary<-getTheCount("BURGLARY FROM VEHICLE","Southwest") 
+
+#Here is where I get the count of the top 3 crimes in N Hollywood
+NHollywoodVehicle<-getTheCount("VEHICLE - STOLEN","N Hollywood")
+NHollywoodBattery<-getTheCount("BATTERY - SIMPLE ASSAULT", "N Hollywood")
+NHollywoodBurglary<-getTheCount("BURGLARY FROM VEHICLE", "N Hollywood")
+
+#Here is where I get the count of the top 3 crimes in Pacific
+#PacificVehicle<-getTheCount("VEHICLE - STOLEN","Pacific")
+#PacificBattery<-getTheCount("BATTERY - SIMPLE ASSAULT", "Pacific")
+#PacificBurglary<-getTheCount("BURGLARY FROM VEHICLE","Pacific")
+
+#Here is where I get the count of top 3 crimes in Southeast
+#SoutheastVehicle<-getTheCount("VEHICLE - STOLEN","Southeast")
+#SoutheastBattery<-getTheCount("BATTERY - SIMPLE ASSAULT","Southeast")
+#SoutheastBurglary<-getTheCount("BURGLARY FROM VEHICLE","Southeast")
+
+Battery<-c(SeventhBattery$freq,SouthwestBattery$freq,NHollywoodBattery$freq)
+Burglary<-c(SeventhBurglary$freq,SouthwestBurglary$freq,NHollywoodBurglary$freq)
+VehicleTheft<-c(SeventhVehicle$freq,SouthwestVehicle$freq,NHollywoodVehicle$freq)
+
+
+topCrimesAndAreas<-tibble(Area = mostCommonArea, CrimeType = mostCommon,Battery = Battery, Burglary = Burglary, VehicleTheft = VehicleTheft)
+
+topCrimesAndAreas<-gather(topCrimesAndAreas, "CrimeType", "Count", 3:5)
+```
+
+#Visualizing some of my data
+
+Here I use the data I tidied up and graphed the 3 top crimes in the 3 cities with the most reported Crime.
+
 ```{R}
 #Plotting number of crimes vs Area
+ggplot(topCrimesAndAreas, aes(fill = Area,x = CrimeType, y =Count)) + geom_bar(position = "dodge",stat = "identity")+geom_text(aes(label=Count), position=position_dodge(width=1.0), vjust=-.5)
 
-ggplot(CrimeDetails, aes(x = as.factor(Crime_Description), y =Area_Name)) + geom_bar()
 ```
+
+Here you can see that 77th Street  led the charts in Battery and Vehicle theft. That was the most active area of reported crimes in my dataset.
+
+

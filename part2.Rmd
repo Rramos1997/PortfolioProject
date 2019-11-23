@@ -2,7 +2,7 @@
 title: "Deliverable Part 1"
 output: html_document
 ---
-My second source is a website of crime statistics that compares LA crimes to the California and National averages.It has 9 different variables for types of crimes and each crime has 4 sections to put the number to scale.
+My second source is a website of crime statistics that compares LA crimes to the California and National averages.It has 7 different variables for types of crimes and each crime has 4 sections to put the number to scale.
 
 #SYNOPSIS
 
@@ -19,7 +19,7 @@ Crime_type, CA_Annual which is the annual average per 100k people, and National_
 Here is where I load in my libraries and data, I'm using a website so I have to web scrape the data.
 
 ```{r}
-install.packages("tidyverse")
+#install.packages("tidyverse")
 library("ggplot2")
 library("tidyverse")
 library("readr")
@@ -27,7 +27,9 @@ library("dplyr")
 library("tidyr")
 library("rvest")
 library("caret")
-library("caret")
+library("knitr")
+library("plyr")
+
 
 #This is where I pull my first deliverable as my source
 purl("Part1.Rmd", output = "part1.r")
@@ -72,11 +74,64 @@ Comparison<-gather(Comparison, "Locale", "Count",2:4)
 ggplot(data = LA_Crime, aes(x = Crime_type, y = Reported)) + geom_bar(colour = "blue", stat = "identity",fill = "steelblue")+geom_text(aes(label=Reported), position=position_dodge(width=0.9), vjust=-0.25)
 
 ```
-This Graph can easily show us the stats for reported crimes in 1 year in LA.
+This Graph can easily show us the stats for reported crimes in 1 year of the nation. This is total reported crimes. The most relevant crime by far is Theft.
 
 
 ##In this next chunk of code I will compare LA's annual crime (per 100k citizens) to the rest of California, and the rest of America.
+
 ```{r}
 ggplot(data = Comparison, aes(fill = Locale, x = Crime_type, y = Count)) + geom_bar(position = "dodge",stat = "identity") + geom_text(aes(label=Count), position=position_dodge(width=1.0), vjust=.1)
+
+```
+
+I'm going to make a new graph using my data from deliverable 1 and plot the same crimes being analyzed here. It will show us all of the reported crimes for a total of 10 years.
+
+```{r}
+countOfStolenVehicle
+countOfBattery
+countOfBurglary
+countOfAssault<-count(CrimeDetails$Crime_Description[CrimeDetails$Crime_Description == "ASSAULT WITH DEADLY WEAPON, AGGRAVATED ASSAULT"])
+countOfMurder<-count(CrimeDetails$Crime_Description[CrimeDetails$Crime_Description == "MANSLAUGHTER, NEGLIGENT"])
+countOfRobbery<-count(CrimeDetails$Crime_Description[CrimeDetails$Crime_Description == "ROBBERY"])
+countOfTheft<-count(CrimeDetails$Crime_Description[CrimeDetails$Crime_Description == "THEFT, PERSON"])
+
+crimeCount<-c(countOfAssault$freq, countOfBurglary$freq, countOfMurder$freq, countOfRobbery$freq, countOfTheft$freq,countOfStolenVehicle$freq)
+crimesToCheck<-c("Assault", "Burglary", "Murder", "Robbery", "Theft", "VehicleTheft")
+actualReported<-tibble(CrimeType = crimesToCheck, Count = crimeCount)
+
+
+ggplot(data = actualReported, aes(x = CrimeType, y = Count)) + geom_bar(stat = "identity", colour = "red", fill = "red") + geom_text(aes(label=Count), position=position_dodge(width=1.0), vjust=-.5)
+
+
+
+
+```
+
+
+##Data Translation
+
+As you can see from my graph, LA dominates the other 2 annual reportings when it comes to crime. Theft in LA per 100k people is almost as high as the national average for theft per 100k reported crimes. The only other category where LA wasn't leading was Burglary.
+
+#Modeling My Data
+Here I will run code to make a linear regression and see the correlation between the variables in my deliverable 1 and the annual projected crime per 100k. I would like to see if area,  has correlation with vehicle theft.
+
+```{r}
+
+CrimeDetails$crimesPerArea<-sapply(CrimeDetails$Area_Name,function(name){
+  crimeper<-count(CrimeDetails$Crime_Description[CrimeDetails$Area_Name == name])
+  
+  return(crimeper$freq)
+})
+
+crimeper<-count(CrimeDetails$Crime_Description[CrimeDetails$Area_Name == "Pacific"])
+
+
+
+
+Comparison$Reported<-LA_Crime$Reported[Comparison$Locale == "LA_Annual"]/100000
+simple_model<-lm(Comparison, formula = Reported ~ Locale + Crime_type + Count)
+summary(simple_model)
+ggplot(data=Comparison, aes(x = Crime_type, y = Reported)) + geom_jitter(width = 0.3)
+#From this we can see the obvious, that Locale and Crime_type correlate with Reported incidents
 
 ```
