@@ -63,7 +63,7 @@ I tried to fix my dates so they's all be the same but I couldn't figure out how 
 
 #CrimeDetails$Time_Occurred<-as.POSIXlt(parse_datetime(CrimeDetails$Time_Occurred,format = "%H:%M %p"))
 ```
-##The 3 most common crimes and areas were 
+## The 3 most common crimes and areas were 
 ```{r}
 mostCommon<-names(sort(summary(as.factor(CrimeDetails$Crime_Description)), decreasing=T)[1:3])
 mostCommon
@@ -71,7 +71,7 @@ mostCommon
 mostCommonArea<-names(sort(summary(as.factor(CrimeDetails$Area_Name)), decreasing=T)[1:3])
 mostCommonArea
 ```
-##Manipulating data
+## Manipulating data
 
 In this section I use the count function to get the total numbers of Stolen Vehicles, Battery, and burglary from vehicle. After that I created a function called getTheCountOf which takes 2 variables, crimeName and areaName and returns the number of reported incidents of crime in that area. After that I put them in a dataframe and gather them so I could properly graph them.
 
@@ -120,7 +120,7 @@ topCrimesAndAreas<-tibble(Area = mostCommonArea, CrimeType = mostCommon,Battery 
 topCrimesAndAreas<-gather(topCrimesAndAreas, "CrimeType", "Count", 3:5)
 ```
 
-#Visualizing some of my data
+# Visualizing some of my data
 
 Here I use the data I tidied up and graphed the 3 top crimes in the 3 cities with the most reported Crime.
 

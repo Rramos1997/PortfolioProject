@@ -16,7 +16,7 @@ Source: https://www.kaggle.com/joemenifee/la-crime-by-districts/data
 
 ### 1. Discovery and Data Preparation
 
-[Deliverable 1]()
+[Deliverable 1](Part1.html)
 
 ### 2. Model Planning and Building
 
