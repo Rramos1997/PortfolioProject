@@ -12,17 +12,22 @@ output:
 For my project I'm going to analyze crime statistics from 2010 to current day. I want to be able to see what area had the most crime, what was the most common crime, and what was the most common time for crime to happen. My source comes from Los Angeles Open Data and I got it from kaggle.com 
 
 Source: https://www.kaggle.com/joemenifee/la-crime-by-districts/data
+Go to this website and download the "crime-data-from-2010-to-present.csv"
 
+Source #2: https://www.areavibes.com/los+angeles-ca/crime/ 
 
 ### 1. Discovery and Data Preparation
+Starting out with a csv dataset of crimes in LA from 2010 to current day.
 
 [Deliverable 1](Part1.html)
 
 ### 2. Model Planning and Building
+Added onto my previous deliverable a new data source, using webscraping I got a new dataset of crime in LA for a singular year, and the amount of each crime per 100k instances
 
-[Deliverable 2]()
+[Deliverable 2](part2.html)
 
 ### 3. Results and Operationalization
+My final summary and review of my portfolio with a list of previous revisions, and a paragraph on call to action.
 
-Coming soon...
+[Deliverable 3](part3.html)
 
