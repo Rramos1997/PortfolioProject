@@ -1,0 +1,48 @@
+---
+title: "Deliverable Part 3"
+output: html_document
+---
+
+```{R}
+#Loading in my part 1 as a source
+library(knitr)
+purl("Part1.Rmd", output = "part1.r")
+source("part1.r")
+```
+
+# Deliverable 1 Revisions  
+***  
+When I went back to my deliverable 1 I was able to fix a lot of coding syntax and bus I    previously had. After peer reviews   
+  +I gave my variables better descriptions and classified them as categorical or continuous.   
+  +I went through each table and changed each empty element to an NA.   
+  +My datetime() function works now, finally stripping the "T" off of the dates  
+  +I got proper visualizations to show the important data on my LA_Crime table  
+  +I fixed the data location so it would call the relative location   (EX:./crime-data-from-2010-to-present.csv)  
+  
+
+# Deliverable 2 Revisions  
+***    
+For my deliverable 2 I did a much better job than my deliverable 1 and had fewer revisions
+  +All I had to fix was my modeling. I Fixed the variables and ran a training and testing model to make a prediction about the data.   
+  
+  
+# Operationalize  
+***     
+From my data the things I were most interested in finding out was which crimes were the most reported, and which areas were there the most crimes. I found the 3 most highly reported crimes were   
+  +Stolen Vehicles  
+  +Burglary From Vehicles  
+  +Battery or Simple Assault  
+and the 3 areas most affected by crime were   
+  +Southwest LA   
+  +North Hollywood  
+  +and 77th street    
+***  
+```{r}
+ggplot(topCrimesAndAreas, aes(fill = Area,x = CrimeType, y =Count)) + geom_bar(position = "dodge",stat = "identity")+geom_text(aes(label=Count), position=position_dodge(width=1.0), vjust=-.5)
+```  
+  
+From the data I obtained I would suggest that we take steps to help prevent these crimes from happening. One thing we would be able to do is to deliver PSA's to the people who live in these areas to stay safe at night and to be cautious when traveling alone, and encouraging them to always watch their surroundings when parked. Battery is harder to prevent since it can happen in so many different ways, but we can help to stop people from getting robbed in their vehicles or getting their vehicles stolen entirely. The best way to stop these crimes would be to increase police activity in these areas if possible, but that could have drawbacks.
+
+## Possible Negative effects
+***   
+Some of the drawbacks we can think of with taking this approach to stopping these crimes form happening so often is that if Vehicle theft became harder to commit criminals might just start committing new crimes. It would be bad if we worked to prevent vehicle theft and Battery just ended up increasing, or if there was an increase in Breaking and Entering of people homes. If we increase police in those areas it might make people upset, since there has been a long history of LA citizens not agreeing with LAPD practices. Say an LAPD officer seen someone trying to get in their car after being locked out and used practices that are against protocol and hurt someone or worst-case scenario killed someone. This would cause discourse in the community and cause distrust with police officials, and might lead to riots or looting. If that happened then there would be a large spike in crime, meaning all of the effort we did to prevent crime actually just made it worse and caused a lot of trouble.
