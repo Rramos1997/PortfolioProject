@@ -43,6 +43,34 @@ ggplot(topCrimesAndAreas, aes(fill = Area,x = CrimeType, y =Count)) + geom_bar(p
   
 From the data I obtained I would suggest that we take steps to help prevent these crimes from happening. One thing we would be able to do is to deliver PSA's to the people who live in these areas to stay safe at night and to be cautious when traveling alone, and encouraging them to always watch their surroundings when parked. Battery is harder to prevent since it can happen in so many different ways, but we can help to stop people from getting robbed in their vehicles or getting their vehicles stolen entirely. The best way to stop these crimes would be to increase police activity in these areas if possible, but that could have drawbacks.
 
+## Cross Validation  
+***  
+```{r}
+##Here I create a training sample and a testing sample, with these we can make predictions on crime Count. Since locale wasn't a good indicator we can omit it.
+set.seed(385)
+sample<-createDataPartition(Comparison$Count,p = 0.75, list = FALSE)
+train<-Comparison[sample, ]
+test<-Comparison[-sample, ]
+
+trainmodel<-lm(formula = Count ~  Crime_type, data = Comparison)
+summary(trainmodel)
+testmodel<-lm(formula = Count ~ Crime_type, data = Comparison)
+summary(testmodel)
+prediction<-trainmodel %>% predict(test)
+
+results <- data.frame( R2 = R2(prediction, test$Count),
+            RMSE = RMSE(prediction, test$Count),
+            MAE = MAE(prediction, test$Count))
+results
+ggplot(data = test, aes(x = prediction, y = Count), ) + geom_point()
+
+```
+The Dataset I ran this on wasn't very large but the graph is okay.   
+My R2(R-squared) value was 0.989, and the larger the value the better model. It explains correlation the predictions have on the factor.  
+My RMSE (Root mean squared error) was 65.55, meaning that I actually had a really large average for errors which is bad.  
+My MAE(Mean absolute error) was at 51.21, meaning the same as RMSE but it effected less by outliers.  
+
+
 ## Possible Negative effects
 ***   
-Some of the drawbacks we can think of with taking this approach to stopping these crimes form happening so often is that if Vehicle theft became harder to commit criminals might just start committing new crimes. It would be bad if we worked to prevent vehicle theft and Battery just ended up increasing, or if there was an increase in Breaking and Entering of people homes. If we increase police in those areas it might make people upset, since there has been a long history of LA citizens not agreeing with LAPD practices. Say an LAPD officer seen someone trying to get in their car after being locked out and used practices that are against protocol and hurt someone or worst-case scenario killed someone. This would cause discourse in the community and cause distrust with police officials, and might lead to riots or looting. If that happened then there would be a large spike in crime, meaning all of the effort we did to prevent crime actually just made it worse and caused a lot of trouble.
+Some of the drawbacks we can think of with taking this approach to stopping these crimes form happening so often is that if Vehicle theft became harder to commit criminals might just start committing new crimes. It would be bad if we worked to prevent vehicle theft and Battery just ended up increasing, or if there was an increase in Breaking and Entering of people homes. If we increase police in those areas it might make people upset, since there has been a long history of LA citizens not agreeing with LAPD practices. Say an LAPD officer seen someone trying to get in their car after being locked out and used practices that are against protocol and hurt someone or worst-case scenario killed someone. This would cause discourse in the community and cause distrust with police officials, and might lead to riots or looting. If that happened then there would be a large spike in crime, meaning all of the effort we did to prevent crime actually just made it worse and caused a lot of trouble. The Other side effecr is that if we bring a higher police presence to one area, then it takes it away from other areas that also need it, possibly allowing for crime to rise there.

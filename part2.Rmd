@@ -134,18 +134,22 @@ Here I will run code to make a linear regression and see the correlation between
 simple_model<-lm(Comparison, formula = Count ~ Locale + Crime_type)
 summary(simple_model)
 
-##Here I create a training sample and a testing sample, with these we can make predictions
+##Here I create a training sample and a testing sample, with these we can make predictions on crime Count. Since locale wasn't a good indicator we can omit it.
 set.seed(385)
 sample<-createDataPartition(Comparison$Count,p = 0.75, list = FALSE)
 train<-Comparison[sample, ]
 test<-Comparison[-sample, ]
 
-trainmodel<-lm(formula = Count ~ Locale + Crime_type, data = Comparison)
+trainmodel<-lm(formula = Count ~  Crime_type, data = Comparison)
 summary(trainmodel)
-testmodel<-lm(formula = Count ~ Locale + Crime_type, data = Comparison)
+testmodel<-lm(formula = Count ~ Crime_type, data = Comparison)
 summary(testmodel)
 prediction<-trainmodel %>% predict(test)
 
+results <- data.frame( R2 = R2(prediction, test$Count),
+            RMSE = RMSE(prediction, test$Count),
+            MAE = MAE(prediction, test$Count))
+results
 ggplot(data = test, aes(x = prediction, y = Count), ) + geom_point()
 
 ```
