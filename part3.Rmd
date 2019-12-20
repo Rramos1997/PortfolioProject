@@ -6,8 +6,8 @@ output: html_document
 ```{R}
 #Loading in my part 1 as a source
 library(knitr)
-purl("Part1.Rmd", output = "part1.r")
-source("part1.r")
+purl("part2.Rmd", output = "part2.r")
+source("part2.r")
 ```
 
 # Deliverable 1 Revisions  
@@ -36,7 +36,7 @@ and the 3 areas most affected by crime were
   +Southwest LA   
   +North Hollywood  
   +and 77th street    
-***  
+***    
 ```{r}
 ggplot(topCrimesAndAreas, aes(fill = Area,x = CrimeType, y =Count)) + geom_bar(position = "dodge",stat = "identity")+geom_text(aes(label=Count), position=position_dodge(width=1.0), vjust=-.5)
 ```  
@@ -47,6 +47,7 @@ From the data I obtained I would suggest that we take steps to help prevent thes
 ***  
 ```{r}
 ##Here I create a training sample and a testing sample, with these we can make predictions on crime Count. Since locale wasn't a good indicator we can omit it.
+library(caret)
 set.seed(385)
 sample<-createDataPartition(Comparison$Count,p = 0.75, list = FALSE)
 train<-Comparison[sample, ]
@@ -69,6 +70,7 @@ The Dataset I ran this on wasn't very large but the graph is okay.
 My R2(R-squared) value was 0.989, and the larger the value the better model. It explains correlation the predictions have on the factor.  
 My RMSE (Root mean squared error) was 65.55, meaning that I actually had a really large average for errors which is bad.  
 My MAE(Mean absolute error) was at 51.21, meaning the same as RMSE but it effected less by outliers.  
+My graph wasn't as accurate as I would have liked it.
 
 
 ## Possible Negative effects

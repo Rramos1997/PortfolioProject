@@ -440,14 +440,50 @@ library(&quot;plyr&quot;)</code></pre>
 
 Victim&lt;-tibble(Report_Number = crime$DR.Number, Age = crime$Victim.Age, Descent = crime$Victim.Descent, Sex = crime$Victim.Sex)
 
-CrimeDetails&lt;-tibble(Report_Number = crime$DR.Number, Date_Reported = crime$Date.Reported, Date_Occurred = crime$Date.Occurred, Time_Occurred = crime$Time.Occurred, Area_Name = crime$Area.Name, Crime_Code = crime$Crime.Code, Crime_Description = crime$Crime.Code.Description, Premise_Code = crime$Premise.Code, Premise_Description = crime$Premise.Description, Weapon_Code = crime$Weapon.Used.Code, Weapon_Description = crime$Weapon.Description, Status_Code = crime$Status.Code, Status_Description = crime$Status.Description, Crime_Code2 = crime$Crime.Code.2, Crime_Code3 = crime$Crime.Code.3, Crime_Code4 = crime$Crime.Code.4, Address = crime$Address, Cross_Street = crime$Cross.Street)
+CrimeDetails&lt;-tibble(Report_Number = crime$DR.Number, Date_Reported = crime$Date.Reported, Date_Occurred = crime$Date.Occurred, Time_Occurred = crime$Time.Occurred, Area_Name = crime$Area.Name,Crime_Description = crime$Crime.Code.Description, Premise_Description = crime$Premise.Description, Weapon_Description = crime$Weapon.Description, Status_Description = crime$Status.Description, Address = crime$Address, Cross_Street = crime$Cross.Street)
 
 Victim$Age[Victim$Age == &quot;0&quot;]&lt;- NA
 Victim$Sex[Victim$Sex == &quot; &quot;]&lt;- NA
 Victim$Descent[Victim$Descent == &quot; &quot;]&lt;- NA
 CrimeDetails$Weapon_Description[CrimeDetails$Weapon_Description == &quot; &quot;]&lt;- NA
-CrimeDetails$Weapon_Description&lt;- lapply(CrimeDetails$Weapon_Description, gsub, pattern = &quot; &quot;, replacement = NA)</code></pre>
-<p>I tried to fix my dates so they’s all be the same but I couldn’t figure out how to get the function working</p>
+CrimeDetails$Weapon_Description&lt;- lapply(CrimeDetails$Weapon_Description, gsub, pattern = &quot; &quot;, replacement = NA)
+Victim&lt;-na.omit(Victim)
+
+CrimeDetails</code></pre>
+<pre><code>## # A tibble: 1,993,259 x 11
+##    Report_Number Date_Reported Date_Occurred Time_Occurred Area_Name
+##            &lt;int&gt; &lt;fct&gt;         &lt;fct&gt;                 &lt;int&gt; &lt;fct&gt;    
+##  1     102005556 2010-01-25T0~ 2010-01-22T0~          2300 Olympic  
+##  2     101822289 2010-11-11T0~ 2010-11-10T0~          1800 Southeast
+##  3     101105609 2010-01-28T0~ 2010-01-27T0~          2230 Northeast
+##  4     101620051 2010-11-11T0~ 2010-11-07T0~          1600 Foothill 
+##  5     101910498 2010-04-07T0~ 2010-04-07T0~          1600 Mission  
+##  6     101927640 2010-12-31T0~ 2010-12-30T0~          2100 Mission  
+##  7     101323794 2010-10-26T0~ 2010-10-26T0~          1315 Newton   
+##  8     101009426 2010-04-20T0~ 2010-04-20T0~          1230 West Val~
+##  9     101621795 2010-12-21T0~ 2010-12-21T0~          1200 Foothill 
+## 10     101105990 2010-02-04T0~ 2010-02-03T0~          1800 Northeast
+## # ... with 1,993,249 more rows, and 6 more variables:
+## #   Crime_Description &lt;fct&gt;, Premise_Description &lt;fct&gt;,
+## #   Weapon_Description &lt;list&gt;, Status_Description &lt;fct&gt;, Address &lt;fct&gt;,
+## #   Cross_Street &lt;fct&gt;</code></pre>
+<pre class="r"><code>Victim</code></pre>
+<pre><code>## # A tibble: 1,647,041 x 4
+##    Report_Number   Age Descent Sex  
+##            &lt;int&gt; &lt;int&gt; &lt;fct&gt;   &lt;fct&gt;
+##  1     101111639    41 W       F    
+##  2     101306897    10 H       F    
+##  3     101405545    43 H       M    
+##  4     101420432    22 W       F    
+##  5     101500638    19 H       M    
+##  6     101708201    22 H       F    
+##  7     131318519    62 W       M    
+##  8     101012262    24 O       M    
+##  9     101519896    31 O       M    
+## 10     101618290    21 W       F    
+## # ... with 1,647,031 more rows</code></pre>
+<pre class="r"><code>#crimeOverTime&lt;-tibble(Date = CrimeDetails$Date_Reported[CrimeDetails$Date_Reported == &quot;2018&quot;], Description = CrimeDetails$Crime_Description, Victim_age = Victim$Age, victim_sex = Victim$Sex)</code></pre>
+<p>This is where I run my posix to fix the dates up, for some reason it works on Date Reported but it wont work on date Occurred. Another problem was a good chunk of data having wrong input for the date but it wasn’t enough to skew results, so I just left them omiited.</p>
 <pre class="r"><code>#Fixing the date and times for my code
 
 CrimeDetails$Date_Reported &lt;- lapply(CrimeDetails$Date_Reported, gsub, pattern=&quot;T&quot;, replacement=&quot; &quot;)
